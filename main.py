@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 import datetime
@@ -25,11 +26,14 @@ def currency():
     if num == '6':
         return 'ETHRUB'
 
-
-key = "https://api.binance.com/api/v3/ticker/price?symbol=" + str(currency())
+curr = str(currency())
+key = "https://api.binance.com/api/v3/ticker/price?symbol=" + curr
 data = requests.get(key)
 data = data.json()
 a = data['price']
+time = datetime.datetime.today()
+t = time.strftime("%Y-%m-%d-%H.%M")
+onefile = open('Datasets/' + curr + '_' + t + '.txt', 'w+')
 r = 0
 rt = []
 ph = []
@@ -39,9 +43,17 @@ while True:
     try:  # used try so that if user pressed other than the given key error will not be shown
         if keyboard.is_pressed('q'):
             print('\n')
-            key = "https://api.binance.com/api/v3/ticker/price?symbol=" + str(currency())
+            curr = str(currency())
+            key = "https://api.binance.com/api/v3/ticker/price?symbol=" + curr
+            data = requests.get(key)
+            data = data.json()
+            a = data['price']
+            t = time.strftime("%Y-%m-%d-%H.%M")
+            onefile.close()
+            onefile = open('Datasets/' + curr + '_' + t + '.txt', 'w+')
             rt = []
             ph = []
+            x = ''
     except:
         break  # if user pressed a key other than the given key the loop will break
 
@@ -60,6 +72,7 @@ while True:
     if data['price'] != x:
         rt.append(t)
         ph.append(data['price'])
+        onefile.write(f"{data['symbol']} price is {data['price']}   max {a: <5}   r= {str(b) + '%': <21}   time: {t} \n")
 
     sort_ph = sorted(ph)
     #print(rt)
@@ -76,6 +89,7 @@ while True:
 
     b = (float(a) - float(data['price']))/float(a) * 100
     print(f"{data['symbol']} price is {data['price']}   max {a: <5}   r= {str(b) + '%': <21}   time: {t}")
+    #onefile.write(f"{data['symbol']} price is {data['price']}   max {a: <5}   r= {str(b) + '%': <21}   time: {t} \n")
 
     #print(rt)
     #print(ph)
